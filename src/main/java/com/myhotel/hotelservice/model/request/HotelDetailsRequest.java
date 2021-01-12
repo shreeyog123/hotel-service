@@ -11,9 +11,9 @@ public class HotelDetailsRequest {
 
     private Integer hotelId;
     private String hotelName;
+    private String city;
 
     private List<HotelRoom> hotelRoom;
-
 
 
 }

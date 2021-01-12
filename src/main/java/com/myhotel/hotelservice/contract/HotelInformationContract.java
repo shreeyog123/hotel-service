@@ -8,19 +8,20 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
+
 @Api(value = "hotel")
 public interface HotelInformationContract {
 
-
-/*    @ApiOperation(
+   @ApiOperation(
             value = "details",
             response = HotelDetails.class,
             produces = MediaType.APPLICATION_JSON_VALUE,
             httpMethod = "GET"
     )
     ResponseEntity<HotelDetails> getHotelDetails(
-            @ApiParam(value = "get hotel details ") final long hotelId);*/
-
+            @ApiParam(value = "city for filter hotel") final String city
+                );
 
     @ApiOperation(
             value = "add",

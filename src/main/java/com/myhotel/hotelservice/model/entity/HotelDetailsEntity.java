@@ -1,12 +1,11 @@
 package com.myhotel.hotelservice.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Data
 @Builder
@@ -17,12 +16,15 @@ import java.util.Set;
 public class HotelDetailsEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer hotelId;
 
     @Column(name = "HOTEL_NAME")
     private String hotelName;
 
-    @OneToMany(cascade=CascadeType.ALL)
-    private Set<RoomEntity> roomEntity;
+    @Column(name = "CITY")
+    private String city;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "hotelDetailsEntity", fetch = FetchType.EAGER)
+    private List<RoomEntity> roomEntity = new ArrayList<>();
 }

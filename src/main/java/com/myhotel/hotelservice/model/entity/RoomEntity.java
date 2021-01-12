@@ -1,14 +1,16 @@
 package com.myhotel.hotelservice.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Data
+@ToString
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +19,6 @@ import java.time.LocalDate;
 public class RoomEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String roomCode;
 
     @Column(name = "ROOM_TYPE")
@@ -32,10 +33,13 @@ public class RoomEntity {
     @Column(name = "AVAILABLE_END_DATE")
     private LocalDate availableEndDate;
 
-    @ManyToOne
+    @Column
+    private String status;
+
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "hotelId", nullable = false)
     private HotelDetailsEntity hotelDetailsEntity;
-
-
 
 
 }
