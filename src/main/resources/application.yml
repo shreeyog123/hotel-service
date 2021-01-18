@@ -1,23 +1,20 @@
+server:
+  port: 8002
+
 spring:
   application:
     name: hotel-service
-
-  h2:
-    console :
-      enabled : true
-      path : /h2
+    description: guest service for my hotel application
+    version: @project.version@
 
   datasource:
-    url: jdbc:h2:mem:testdb
-
-  data:
-    jpa:
-      repositories:
-        bootstrap-mode: default
-
-
-server:
-  port: 8031
+    url: jdbc:mysql://localhost:3306/myhotel
+    username : root
+    password : root
+  jpa:
+    hibernate :
+      ddl-auto : create
+      show-sql : true
 
 eureka:
   client:

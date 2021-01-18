@@ -6,10 +6,16 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
-public interface HotelDetailsRepository extends CrudRepository<HotelDetailsEntity, Integer>{
+public interface HotelDetailsRepository extends CrudRepository<HotelDetailsEntity, Long>{
 
     @Query(value = "from HotelDetailsEntity where city = :city", nativeQuery = false)
     List<HotelDetailsEntity> findByCity(@Param("city") final String city);
+
+
+
+
+
 }

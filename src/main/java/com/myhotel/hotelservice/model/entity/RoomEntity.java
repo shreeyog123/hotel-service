@@ -33,9 +33,6 @@ public class RoomEntity {
     @Column(name = "AVAILABLE_END_DATE")
     private LocalDate availableEndDate;
 
-    @Column
-    private String status;
-
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hotelId", nullable = false)

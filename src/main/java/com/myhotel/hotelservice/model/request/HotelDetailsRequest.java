@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 public class HotelDetailsRequest {
 
-    private Integer hotelId;
+    private Long hotelId;
     private String hotelName;
     private String city;
 

@@ -16,7 +16,7 @@ import java.util.List;
 public class HotelDetailsEntity {
 
     @Id
-    private Integer hotelId;
+    private Long hotelId;
 
     @Column(name = "HOTEL_NAME")
     private String hotelName;
@@ -26,5 +26,6 @@ public class HotelDetailsEntity {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "hotelDetailsEntity", fetch = FetchType.EAGER)
+    @Column(name = "HOTEL_ID")
     private List<RoomEntity> roomEntity = new ArrayList<>();
 }

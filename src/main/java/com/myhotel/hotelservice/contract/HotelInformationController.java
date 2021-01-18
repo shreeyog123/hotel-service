@@ -2,9 +2,13 @@ package com.myhotel.hotelservice.contract;
 
 import com.myhotel.hotelservice.model.HotelDetails;
 import com.myhotel.hotelservice.model.request.HotelDetailsRequest;
+import com.myhotel.hotelservice.model.response.Hotel;
 import com.myhotel.hotelservice.service.hotelInformation.HotelInformationService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("hotel")
@@ -18,10 +22,24 @@ public class HotelInformationController implements HotelInformationContract{
 
     @Override
     @GetMapping(value = "/details")
-    public ResponseEntity<HotelDetails> getHotelDetails(
-            @RequestParam("city") String city) {
+    public ResponseEntity<HotelDetails> getAllHotelDetails(
+            @RequestParam("city") String city,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        HotelDetails hotelDetails = hotelInformationService.getAvailableHotelDetails(city);
+        HotelDetails hotelDetails = hotelInformationService.getAvailableHotelDetails(city,startDate,endDate);
+
+        return ResponseEntity.ok().body(hotelDetails);
+    }
+
+    @Override
+    @GetMapping(value = "/details/{hotelId}")
+    public ResponseEntity<Hotel> getAHotelDetails(
+            @PathVariable("hotelId") Long hotelId,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        Hotel hotelDetails = hotelInformationService.getASpecificHotelDetails(hotelId,startDate,endDate);
 
         return ResponseEntity.ok().body(hotelDetails);
     }
