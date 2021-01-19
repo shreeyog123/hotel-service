@@ -5,13 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class HotelRoom {
+public class HotelUpdateRequest {
+
+    private long hotelId;
 
     private String roomType;
-    private long price;
-    private long availableRooms;
+
+    private String status;
+
+
+
 }

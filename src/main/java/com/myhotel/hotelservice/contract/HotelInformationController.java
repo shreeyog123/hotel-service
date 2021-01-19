@@ -2,14 +2,14 @@ package com.myhotel.hotelservice.contract;
 
 import com.myhotel.hotelservice.model.HotelDetails;
 import com.myhotel.hotelservice.model.request.HotelDetailsRequest;
+import com.myhotel.hotelservice.model.request.HotelUpdateRequest;
 import com.myhotel.hotelservice.model.response.Hotel;
 import com.myhotel.hotelservice.service.hotelInformation.HotelInformationService;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-
+@Slf4j
 @RestController
 @RequestMapping("hotel")
 public class HotelInformationController implements HotelInformationContract{
@@ -22,24 +22,18 @@ public class HotelInformationController implements HotelInformationContract{
 
     @Override
     @GetMapping(value = "/details")
-    public ResponseEntity<HotelDetails> getAllHotelDetails(
-            @RequestParam("city") String city,
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+    public ResponseEntity<HotelDetails> getAllHotelDetails(@RequestParam("city") String city){
 
-        HotelDetails hotelDetails = hotelInformationService.getAvailableHotelDetails(city,startDate,endDate);
+        HotelDetails hotelDetails = hotelInformationService.getAvailableHotelDetails(city);
 
         return ResponseEntity.ok().body(hotelDetails);
     }
 
     @Override
     @GetMapping(value = "/details/{hotelId}")
-    public ResponseEntity<Hotel> getAHotelDetails(
-            @PathVariable("hotelId") Long hotelId,
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+    public ResponseEntity<Hotel> getAHotelDetails(@PathVariable("hotelId") long hotelId){
 
-        Hotel hotelDetails = hotelInformationService.getASpecificHotelDetails(hotelId,startDate,endDate);
+        Hotel hotelDetails = hotelInformationService.getASpecificHotelDetails(hotelId);
 
         return ResponseEntity.ok().body(hotelDetails);
     }
@@ -50,6 +44,15 @@ public class HotelInformationController implements HotelInformationContract{
             @RequestBody final HotelDetailsRequest hotelDetailsRequest) {
 
         String message = hotelInformationService.addHotel(hotelDetailsRequest);
+
+        return ResponseEntity.ok().body(message);
+    }
+
+    @Override
+    @PutMapping(value = "/hotel")
+    public ResponseEntity<String> updateHotel(@RequestBody final HotelUpdateRequest hotelUpdateRequest) {
+
+        String message = hotelInformationService.updateHotel(hotelUpdateRequest);
 
         return ResponseEntity.ok().body(message);
     }

@@ -6,6 +6,7 @@ import com.myhotel.hotelservice.model.entity.HotelDetailsEntity;
 import com.myhotel.hotelservice.model.entity.RoomEntity;
 import com.myhotel.hotelservice.model.request.HotelDetailsRequest;
 import com.myhotel.hotelservice.model.request.HotelRoom;
+import com.myhotel.hotelservice.model.request.HotelUpdateRequest;
 import com.myhotel.hotelservice.model.response.Hotel;
 import com.myhotel.hotelservice.model.response.RoomAvailable;
 import com.myhotel.hotelservice.repository.HotelDetailsRepository;
@@ -14,7 +15,6 @@ import com.myhotel.hotelservice.utils.BusinessValidationUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +24,9 @@ import java.util.Optional;
 public class HotelInformationServiceImpl implements HotelInformationService{
 
     public static final String ADDED_SUCCESSFULLY = "hotel has been added successfully";
+    public static final String YOU_WILL_NOT_BOOK_HOTELS_FOR_PREVIOUS_DAYS = "you will not book hotels for previous days";
     private static final String HOTEL_NOT_FOUND = "requested hotel is not available";
+    public static final String HOTEL_ROOM_TYPE_IS_NOT_AVAILABLE = "Hotel Room type is not available in data-base, It should be QUEEN, KING, LARGE";
 
     private final HotelDetailsRepository hotelDetailsRepository;
     private final RoomRepository roomRepository;
@@ -51,11 +53,9 @@ public class HotelInformationServiceImpl implements HotelInformationService{
 
         rooms.forEach(r-> {
             RoomEntity room = RoomEntity.builder()
-                    .availableStartDate(r.getAvailableStartDate())
-                    .availableEndDate(r.getAvailableEndDate())
                     .roomType(r.getRoomType())
-                    .roomCode(r.getRoomCode())
                     .price(r.getPrice())
+                    .rooms(r.getAvailableRooms())
                     .hotelDetailsEntity(hotelDetailsEntity)
                     .build();
             roomRepository.save(room);
@@ -65,28 +65,25 @@ public class HotelInformationServiceImpl implements HotelInformationService{
     }
 
     @Override
-    public HotelDetails getAvailableHotelDetails(final String city, final LocalDate startDate, final LocalDate endDate) {
+    public HotelDetails getAvailableHotelDetails(final String city) {
 
         List<Hotel> hotels = new ArrayList<>();
 
         final List<HotelDetailsEntity> hotelList = hotelDetailsRepository.findByCity(city);
 
         hotelList.forEach(hotel -> {
-
-           final List<RoomEntity> rooms = getAvailableRooms(hotel.getRoomEntity(),startDate, endDate);
+           final List<RoomEntity> rooms = hotel.getRoomEntity();
            List<RoomAvailable> roomsAvailable = new ArrayList<>();
            rooms.forEach(room ->{
-
                 RoomAvailable r = RoomAvailable.builder()
-                       .roomCode(room.getRoomCode())
                        .roomType(room.getRoomType())
                        .price(room.getPrice())
-                       .availableStartDate(room.getAvailableStartDate())
-                       .availableEndDate(room.getAvailableEndDate())
+                       .availableRooms(room.getRooms())
                        .build();
                roomsAvailable.add(r);
            });
                Hotel a = Hotel.builder()
+                       .hotelId(hotel.getHotelId())
                        .hotelName(hotel.getHotelName())
                        .roomAvailable(roomsAvailable)
                        .build();
@@ -97,35 +94,73 @@ public class HotelInformationServiceImpl implements HotelInformationService{
         return HotelDetails.builder()
                 .hotels(hotels)
                 .build();
+
     }
 
     @Override
-    public Hotel getASpecificHotelDetails(final Long hotelId, final LocalDate startDate, final LocalDate endDate) {
+    public Hotel getASpecificHotelDetails(final Long hotelId) {
 
         List<RoomAvailable> roomsAvailable = new ArrayList<>();
 
         HotelDetailsEntity hotelDetails =  getHotelByHotelId(hotelId);
         log.info("get hotel details {} for hotelId {} ", hotelDetails, hotelId);
 
-        List<RoomEntity> rooms = validationUtils.getAvailableListOfRooms(hotelDetails.getRoomEntity(),startDate,endDate);
-        log.info("filter rooms by toDate and formDate available rooms {} ", rooms);
+        List<RoomEntity> rooms = hotelDetails.getRoomEntity();
+        log.info("available rooms rooms {} ", rooms);
 
         rooms.forEach(room -> {
            RoomAvailable r=  RoomAvailable.builder()
-                    .roomCode(room.getRoomCode())
                     .roomType(room.getRoomType())
                     .price(room.getPrice())
-                    .availableStartDate(room.getAvailableStartDate())
-                    .availableEndDate(room.getAvailableEndDate())
+                    .availableRooms(room.getRooms())
                     .build();
             roomsAvailable.add(r);
         });
 
         return Hotel.builder()
+                .hotelId(hotelDetails.getHotelId())
                 .hotelName(hotelDetails.getHotelName())
                 .roomAvailable(roomsAvailable)
                 .build();
     }
+
+    @Override
+    public String updateHotel(final HotelUpdateRequest updateRequest) {
+
+       HotelDetailsEntity hotelEntity = getHotelByHotelId(updateRequest.getHotelId());
+       log.info("Hotel Entity {} ", hotelEntity.getRoomEntity());
+
+       RoomEntity roomEntity = getRoomEntity(updateRequest, hotelEntity);
+       log.info("roomEntity {} ", roomEntity);
+
+       if(updateRequest.getStatus().equals("CONFIRMED")){
+           roomEntity.setRooms(roomEntity.getRooms()-1);
+           updateRoomForHotel(roomEntity);
+       }
+       else if(updateRequest.getStatus().equals("FEEDBACK") || updateRequest.getStatus().equals("BOOKING_CANCELLED")){
+           roomEntity.setRooms(roomEntity.getRooms()+1);
+           updateRoomForHotel(roomEntity);
+       }
+
+       return "successfully";
+    }
+
+    private void updateRoomForHotel(RoomEntity roomEntity) {
+        RoomEntity savedEntity = roomRepository.save(roomEntity);
+        log.info("saved room entity {} ", savedEntity);
+    }
+
+    private RoomEntity getRoomEntity(HotelUpdateRequest updateRequest, HotelDetailsEntity hotelEntity) {
+
+        Optional<RoomEntity> roomEntity = hotelEntity.getRoomEntity().stream().filter(r -> r.getRoomType().equals(updateRequest.getRoomType())).findFirst();
+
+        if (roomEntity.isPresent()) {
+            return roomEntity.get();
+        } else {
+            throw new HotelNotFoundException(HOTEL_ROOM_TYPE_IS_NOT_AVAILABLE);
+        }
+    }
+
 
     private HotelDetailsEntity getHotelByHotelId(final Long hotelId) {
         if(hotelId != null) {
@@ -137,11 +172,5 @@ public class HotelInformationServiceImpl implements HotelInformationService{
             }
         }
         throw new HotelNotFoundException(HOTEL_NOT_FOUND);
-    }
-
-    private List<RoomEntity> getAvailableRooms(final List<RoomEntity> hotelRooms,
-                                       final LocalDate startDate,
-                                       final LocalDate endDate) {
-        return validationUtils.getAvailableListOfRooms(hotelRooms,startDate, endDate);
     }
 }

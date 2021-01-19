@@ -1,8 +1,8 @@
 package com.myhotel.hotelservice.utils;
 
-
 import com.myhotel.hotelservice.model.entity.RoomEntity;
 import org.springframework.stereotype.Component;
+import rx.schedulers.TimeInterval;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,11 +18,16 @@ public class BusinessValidationUtils {
 
     private boolean validateDates(RoomEntity r, LocalDate startDate, LocalDate endDate) {
 
+/*
         final boolean startDateFlag = r.getAvailableStartDate().isEqual(startDate) ||  r.getAvailableStartDate().isAfter(startDate) ;
-        final boolean endDateFlag = r.getAvailableEndDate().isEqual(endDate) ||  r.getAvailableEndDate().isBefore(endDate) ;
+        final boolean endDateFlag = r.getAvailableEndDate().isEqual(endDate) ||  r.getAvailableEndDate().isBefore(endDate);
 
-        return startDateFlag && endDateFlag;
+        return startDateFlag && endDateFlag;*/
+        return false;
     }
 
+    public boolean startDateMustBeTodayOrAfter(final LocalDate startDate) {
 
+        return startDate.isAfter(LocalDate.now()) || startDate.isEqual(LocalDate.now());
+    }
 }

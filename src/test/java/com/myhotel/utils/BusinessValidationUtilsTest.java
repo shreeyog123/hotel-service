@@ -61,9 +61,54 @@ public class BusinessValidationUtilsTest {
 
     }
 
+    @Test
+    public void returnListsIfAnyRoomIsAvailableForFilterDates_ifRequestedDateRangeIsInside(){
+
+        LocalDate startDate = LocalDate.now().plusMonths(2).plusDays(2);
+        LocalDate endDate = LocalDate.now().plusMonths(2).plusDays(5);
+
+        List<RoomEntity> listOfRooms = validationUtils.getAvailableListOfRooms(getRooms(), startDate, endDate);
+
+        Assert.assertEquals(1, listOfRooms.size());
+
+    }
+
+    @Test
+    public void startDateMustBeToday(){
+
+        LocalDate startDate = LocalDate.now();
+
+        boolean flag = validationUtils.startDateMustBeTodayOrAfter(startDate);
+
+        Assert.assertEquals(true, flag);
+
+    }
+
+    @Test
+    public void startDateMustBeAfterToday(){
+
+        LocalDate startDate = LocalDate.now().plusDays(10);
+
+        boolean flag = validationUtils.startDateMustBeTodayOrAfter(startDate);
+
+        Assert.assertEquals(true, flag);
+
+    }
+
+    @Test
+    public void startDateMustNotBeBeforeToday(){
+
+        LocalDate startDate = LocalDate.now().minusDays(10);
+
+        boolean flag = validationUtils.startDateMustBeTodayOrAfter(startDate);
+
+        Assert.assertEquals(false, flag);
+
+    }
+
     private List<RoomEntity> getRooms(){
 
-        List<RoomEntity> rooms = new ArrayList<>();
+        /*List<RoomEntity> rooms = new ArrayList<>();
 
         RoomEntity room1  = RoomEntity.builder()
                 .roomCode("Q101")
@@ -87,7 +132,9 @@ public class BusinessValidationUtilsTest {
         rooms.add(room2);
         rooms.add(room3);
 
-        return rooms;
+        return rooms;*/
+
+        return null;
 
     }
 }

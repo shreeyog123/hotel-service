@@ -19,19 +19,14 @@ import java.time.LocalDate;
 public class RoomEntity {
 
     @Id
-    private String roomCode;
-
     @Column(name = "ROOM_TYPE")
     private String roomType;
 
     @Column(name = "PRICE")
-    private Integer price;
+    private long price;
 
-    @Column(name = "AVAILABLE_START_DATE")
-    private LocalDate availableStartDate;
-
-    @Column(name = "AVAILABLE_END_DATE")
-    private LocalDate availableEndDate;
+    @Column(name="rooms")
+    private long rooms;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)

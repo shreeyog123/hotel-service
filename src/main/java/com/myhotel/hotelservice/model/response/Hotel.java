@@ -9,6 +9,8 @@ import java.util.List;
 @Builder
 public class Hotel {
 
+    private Long hotelId;
+
     private String hotelName;
 
     private List<RoomAvailable> roomAvailable;
