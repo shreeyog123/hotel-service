@@ -39,7 +39,7 @@ public class HotelInformationController implements HotelInformationContract{
     }
 
     @Override
-    @PostMapping(value = "/add")
+    @PostMapping(value = "/")
     public ResponseEntity<String> addHotel(
             @RequestBody final HotelDetailsRequest hotelDetailsRequest) {
 
@@ -49,11 +49,13 @@ public class HotelInformationController implements HotelInformationContract{
     }
 
     @Override
-    @PutMapping(value = "/hotel")
+    @PutMapping(value = "/")
     public ResponseEntity<String> updateHotel(@RequestBody final HotelUpdateRequest hotelUpdateRequest) {
 
         String message = hotelInformationService.updateHotel(hotelUpdateRequest);
 
         return ResponseEntity.ok().body(message);
     }
+
+
 }

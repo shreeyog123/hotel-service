@@ -137,7 +137,7 @@ public class HotelInformationServiceImpl implements HotelInformationService{
            roomEntity.setRooms(roomEntity.getRooms()-1);
            updateRoomForHotel(roomEntity);
        }
-       else if(updateRequest.getStatus().equals("FEEDBACK") || updateRequest.getStatus().equals("BOOKING_CANCELLED")){
+       else if(updateRequest.getStatus().equals("FEEDBACK") || updateRequest.getStatus().equals("CANCELLED")){
            roomEntity.setRooms(roomEntity.getRooms()+1);
            updateRoomForHotel(roomEntity);
        }
