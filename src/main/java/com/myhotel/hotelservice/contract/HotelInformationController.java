@@ -1,18 +1,19 @@
 package com.myhotel.hotelservice.contract;
 
-import com.myhotel.hotelservice.model.HotelDetails;
+import com.myhotel.hotelservice.model.response.HotelDetails;
 import com.myhotel.hotelservice.model.request.HotelDetailsRequest;
 import com.myhotel.hotelservice.model.request.HotelUpdateRequest;
 import com.myhotel.hotelservice.model.response.Hotel;
+import com.myhotel.hotelservice.model.response.HotelResponse;
 import com.myhotel.hotelservice.service.hotelInformation.HotelInformationService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("hotel")
-public class HotelInformationController implements HotelInformationContract{
+public class HotelInformationController implements HotelInformationContract {
 
     private final HotelInformationService hotelInformationService;
 
@@ -21,40 +22,48 @@ public class HotelInformationController implements HotelInformationContract{
     }
 
     @Override
-    @GetMapping(value = "/details")
-    public ResponseEntity<HotelDetails> getAllHotelDetails(@RequestParam("city") String city){
+    public ResponseEntity<HotelDetails> getAllHotelInformationByCity(final String city) {
 
-        HotelDetails hotelDetails = hotelInformationService.getAvailableHotelDetails(city);
+        log.info("get all hotel details for city {} ", city);
+
+        final HotelDetails hotelDetails = hotelInformationService.getAvailableHotelDetails(city);
+        log.info("successfully fetch HotelDetails {}", hotelDetails);
 
         return ResponseEntity.ok().body(hotelDetails);
     }
 
     @Override
     @GetMapping(value = "/details/{hotelId}")
-    public ResponseEntity<Hotel> getAHotelDetails(@PathVariable("hotelId") long hotelId){
+    public ResponseEntity<Hotel> getHotelDetailsByHotelId(final long hotelId) {
+
+        log.info("get hotel details for hotel-id {}", hotelId);
 
         Hotel hotelDetails = hotelInformationService.getASpecificHotelDetails(hotelId);
+        log.info("successfully fetch HotelDetails {}", hotelDetails);
 
         return ResponseEntity.ok().body(hotelDetails);
     }
 
     @Override
-    @PostMapping(value = "/")
-    public ResponseEntity<String> addHotel(
-            @RequestBody final HotelDetailsRequest hotelDetailsRequest) {
+    public ResponseEntity<HotelResponse> addHotelDetails(final HotelDetailsRequest hotelDetailsRequest) {
 
-        String message = hotelInformationService.addHotel(hotelDetailsRequest);
+        log.info("add hotel information hotelDetailsRequest {}", hotelDetailsRequest);
 
-        return ResponseEntity.ok().body(message);
+        final String message = hotelInformationService.addHotel(hotelDetailsRequest);
+        log.info("message {}", message);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(HotelResponse.builder().message(message).build());
     }
 
     @Override
-    @PutMapping(value = "/")
-    public ResponseEntity<String> updateHotel(@RequestBody final HotelUpdateRequest hotelUpdateRequest) {
+    public ResponseEntity<HotelResponse> updateHotelDetails(final HotelUpdateRequest hotelUpdateRequest) {
 
-        String message = hotelInformationService.updateHotel(hotelUpdateRequest);
+        log.info("update hotel information hotelUpdateRequest {}", hotelUpdateRequest);
 
-        return ResponseEntity.ok().body(message);
+        final String message = hotelInformationService.updateHotel(hotelUpdateRequest);
+        log.info("message {}", message);
+
+        return ResponseEntity.accepted().body(HotelResponse.builder().message(message).build());
     }
 
 

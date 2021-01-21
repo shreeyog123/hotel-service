@@ -1,6 +1,5 @@
-package com.myhotel.hotelservice.model;
+package com.myhotel.hotelservice.model.response;
 
-import com.myhotel.hotelservice.model.response.Hotel;
 import lombok.Builder;
 import lombok.Data;
 
